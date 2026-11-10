@@ -1,0 +1,15 @@
+{
+  "name": "sketch",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local sketch board: renders sketches/ (D2 + markdown on an infinite canvas) with a chat relay to a Claude Code session.",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "@d2lang/d2": "^0.1.34"
+  }
+}

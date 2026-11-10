@@ -1,0 +1,39 @@
+direction: right
+
+trip_agg: Trip {
+  shape: class
+  id: TripId
+  rider: RiderId
+  pickup: Location
+  dropoff: Location
+  driver: DriverId?
+  +offer(d: DriverId, ttl): Offer
+  +accept(o: Offer): Match
+  +cancel(by): void
+}
+
+rules: |md
+  **Invariants**
+  - a Trip has at most one live Offer at a time
+  - a Driver holds at most one Match
+  - accepting an expired Offer fails
+|
+
+lifecycle: Trip lifecycle {
+  requested: Requested
+  offering: Offering
+  matched: Matched
+  ontrip: OnTrip
+  done: Completed
+  cancelled: Cancelled
+  requested -> offering: Candidates found
+  offering -> offering: Offer expires → next Driver
+  offering -> matched: Driver accepts
+  matched -> ontrip: pickup
+  ontrip -> done: dropoff
+  offering -> cancelled: no Driver / Rider cancels
+  matched -> cancelled: cancel
+}
+
+trip_agg -> lifecycle: moves through
+trip_agg -- rules: { style.stroke-dash: 3 }

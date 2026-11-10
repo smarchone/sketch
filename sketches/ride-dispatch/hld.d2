@@ -1,0 +1,25 @@
+direction: right
+
+rider: Rider { shape: person }
+driver: Driver { shape: person }
+
+gateway: Gateway (WebSocket)
+trips: Trip service
+dispatch: Dispatch
+locsvc: Location ingest
+supply: Supply index { shape: cylinder; label: "Supply index\n(geo cells, in-memory)" }
+eta: ETA / routing
+tripdb: Trip store { shape: cylinder }
+
+rider -> gateway: requests Trip
+gateway -> trips: create Trip
+trips -> tripdb: persist
+trips -> dispatch: dispatch Trip
+dispatch -> supply: nearby Drivers
+dispatch -> eta: rank Candidates
+dispatch -> gateway: Offer (10s)
+gateway -> driver: Offer
+driver -> gateway: accept
+gateway -> dispatch: accept → Match
+driver -> locsvc: Location every ~4s { style.stroke-dash: 4 }
+locsvc -> supply: upsert { style.stroke-dash: 4 }

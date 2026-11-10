@@ -1,0 +1,97 @@
+{
+ "nodes": [
+  {
+   "id": "vocab",
+   "type": "file",
+   "file": "vocab.md",
+   "x": 0,
+   "y": 0,
+   "width": 420,
+   "height": 380
+  },
+  {
+   "id": "g-hld",
+   "type": "group",
+   "label": "HLD",
+   "x": 460,
+   "y": -20,
+   "width": 1100,
+   "height": 460
+  },
+  {
+   "id": "hld",
+   "type": "file",
+   "file": "hld.d2",
+   "x": 480,
+   "y": 20,
+   "width": 700,
+   "height": 400
+  },
+  {
+   "id": "forks",
+   "type": "text",
+   "color": "2",
+   "x": 1220,
+   "y": 20,
+   "width": 320,
+   "height": 220,
+   "text": "### \u26a0 Open forks\n- **Offer** to one **Driver** at a time (sequential) or broadcast to several (first accept wins)?\n- Greedy per **Trip**, or batch **Dispatch** every ~2s for a better global **Match**?"
+  },
+  {
+   "id": "g-lld",
+   "type": "group",
+   "label": "LLD \u00b7 Dispatch",
+   "x": 460,
+   "y": 500,
+   "width": 1100,
+   "height": 820
+  },
+  {
+   "id": "domain",
+   "type": "file",
+   "file": "domain.d2",
+   "x": 480,
+   "y": 540,
+   "width": 1060,
+   "height": 380
+  },
+  {
+   "id": "schema",
+   "type": "file",
+   "file": "schema.d2",
+   "x": 480,
+   "y": 960,
+   "width": 560,
+   "height": 320
+  },
+  {
+   "id": "ports",
+   "type": "file",
+   "file": "ports.md",
+   "x": 1080,
+   "y": 960,
+   "width": 460,
+   "height": 320
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "fromNode": "hld",
+   "toNode": "domain",
+   "label": "Trip"
+  },
+  {
+   "id": "e2",
+   "fromNode": "domain",
+   "toNode": "schema",
+   "label": "persisted as"
+  },
+  {
+   "id": "e3",
+   "fromNode": "domain",
+   "toNode": "ports",
+   "label": "through"
+  }
+ ]
+}

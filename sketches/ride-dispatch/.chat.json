@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "id": "984cbb97",
+      "author": "you",
+      "text": "Sketch a ride-hailing dispatch system",
+      "at": "2026-11-10T17:01:17.584Z",
+      "handled": true
+    },
+    {
+      "id": "80667a51",
+      "author": "claude",
+      "text": "Sketched dispatch end to end: Drivers stream Location into an in-memory Supply index, Dispatch ranks nearby Candidates by ETA and sends a time-boxed Offer, and the Trip aggregate (one live Offer, one Match per Driver, CAS on version) runs Requested → Offering → Matched → OnTrip. The fork worth discussing: greedy sequential Offers per Trip vs. batching Trips every ~2s for a better global Match.",
+      "at": "2026-11-10T17:02:19.183Z"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sketch</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9C%8E%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <script>try { const t = localStorage.getItem('sketch.theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch {}</script>
+  <script src="/vendor/marked.min.js"></script>
+  <script src="/vendor/purify.min.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <!-- Sketches -->
+    <nav class="sidebar" id="sidebar">
+      <div class="brand"><span class="logo">✎</span><strong>Sketch</strong></div>
+      <div id="sketch-list"></div>
+    </nav>
+
+    <!-- Board -->
+    <section class="main">
+      <header class="topbar">
+        <div class="crumbs" id="crumbs"></div>
+        <div class="grow"></div>
+        <button class="ghost" id="only-changed" title="Dim everything that hasn't changed since you last marked the board seen" hidden></button>
+        <button class="ghost" id="mark-seen" title="Clear the changed badges" hidden>Mark seen</button>
+        <div class="zoom">
+          <button class="ghost icon" id="zoom-out" title="Zoom out (−)">−</button>
+          <button class="ghost zoom-level" id="zoom-fit" title="Fit board (F)">100%</button>
+          <button class="ghost icon" id="zoom-in" title="Zoom in (+)">+</button>
+        </div>
+        <button class="ghost icon theme-toggle" id="theme" title="Theme"></button>
+      </header>
+      <div class="notice" id="notice" hidden></div>
+      <div class="viewport" id="viewport">
+        <div class="world" id="world"></div>
+        <div class="empty" id="empty" hidden></div>
+      </div>
+      <div class="hint">drag to pan · ⌘/ctrl + scroll to zoom · double-click a tile to focus · F to fit</div>
+    </section>
+
+    <!-- Chat relay -->
+    <aside class="chat">
+      <header class="chat-head">
+        <span class="mark">✳︎</span>
+        <div class="chat-title">
+          <strong>Claude</strong>
+          <span class="status" id="presence"><span class="presence-dot"></span><span id="presence-text">offline</span></span>
+        </div>
+      </header>
+      <div class="messages" id="messages"></div>
+      <form class="composer" id="composer">
+        <div class="composer-box">
+          <textarea id="input" rows="1" placeholder="Describe a system, or react to the board…"></textarea>
+          <div class="composer-row">
+            <span class="context-chip" id="composer-target"></span>
+            <span class="grow"></span>
+            <span class="kbd-hint">↵ to send</span>
+            <button class="send" id="send" type="submit" title="Send (Enter)" aria-label="Send" disabled>
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </form>
+    </aside>
+  </div>
+  <div class="tooltip" id="tooltip" hidden></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

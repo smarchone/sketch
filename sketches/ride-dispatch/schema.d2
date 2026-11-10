@@ -1,0 +1,28 @@
+vars: { d2-config: { sketch: false } }
+direction: right
+
+trips: {
+  shape: sql_table
+  id: uuid {constraint: primary_key}
+  rider_id: uuid
+  driver_id: uuid
+  state: text
+  pickup: geo
+  version: int
+}
+
+offers: {
+  shape: sql_table
+  id: uuid {constraint: primary_key}
+  trip_id: uuid {constraint: foreign_key}
+  driver_id: uuid
+  expires_at: timestamp
+}
+
+supply: "Supply index (Redis GEO / H3)" {
+  shape: sql_table
+  "cell → driver_id": set
+  "driver:{id}": "lat, lng, status, ts"
+}
+
+offers.trip_id -> trips.id
