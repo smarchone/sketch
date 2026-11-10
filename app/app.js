@@ -203,7 +203,7 @@ function boardNodes(b) {
   if (b.canvas) nodes = b.canvas.nodes.map((n) => ({ ...n }));
   else {
     const files = Object.keys(b.tiles).filter((f) => f !== 'vocab.md');
-    nodes = files.map((f, i) => ({ id: `auto-${f}`, type: 'file', file: f, x: 420 + (i % 2) * 600, y: Math.floor(i / 2) * 460, width: 560, height: 400 }));
+    nodes = files.map((f, i) => ({ id: `auto-${f}`, type: 'file', file: f, x: 420 + (i % 2) * 740, y: i, width: 700, height: 100 })); // rows stack via the overlap pass
   }
   if (b.vocab && !nodes.some((n) => n.type === 'file' && n.file === 'vocab.md')) {
     const xs = nodes.map((n) => n.x);

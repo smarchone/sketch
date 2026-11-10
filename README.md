@@ -35,7 +35,7 @@ sketches/<name>/
   *.d2 / *.md     # tiles: any visual that explains the design best
 ```
 
-See `sketches/url-shortener/` for an example. Chat history lives in `sketches/.relay/` (gitignored).
+How Claude decides what to draw (center of gravity, vocab, lean LLD, which visual form, layout, the render check) lives in the `sketch-authoring` skill (`.claude/skills/sketch-authoring/`). The `/sketch` skill only runs the chat relay and loads it.
 
 ## Get started
 

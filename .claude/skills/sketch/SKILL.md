@@ -37,10 +37,12 @@ job by writing files in `sketches/<name>/`. The board re-renders live as you wri
 - `sketch: null` is the **new-sketch** thread: create `sketches_root/<kebab-name>/` and pass that name as
   `sketch` when you complete. The conversation then moves into the new sketch's thread and the board opens it.
   Write `vocab.md` and `board.canvas` first, so the user sees the board appear while you draw the rest.
-- Read the existing files first when resketching. Change only what the request touches; keep the rest stable.
+- **Author with the `sketch-authoring` skill.** Load it with the Skill tool before your first job in this
+  session (it stays loaded), and follow it for everything you write: vocab, HLD, lean LLD, forms, layout,
+  resketch rules and the render check.
 - Questions only: answer, no edits. Truly ambiguous: ask one concrete question, no edits.
-- **Check your render** before replying: `curl -s "${SKETCH_URL:-http://127.0.0.1:3460}/api/board?sketch=<name>"`
-  and look for `"error"` in `tiles` or a `canvas_error`. Fix D2 errors and re-check.
+- **Check your render** before replying (step 8 of `sketch-authoring`): no tile errors, and no D2 tile
+  narrower than its diagram.
 - Finish with **one** call (this posts your reply in the sketch's chat):
 
   ```bash
@@ -52,51 +54,3 @@ job by writing files in `sketches/<name>/`. The board re-renders live as you wri
   409 means the job was released: drop it and keep listening.
 
 Terminal output: at most one line per job. The conversation happens in the chat.
-
-## What a sketch is
-
-A **sketch layer**, not a spec. The reader should get the feel of the design in ~30 seconds.
-**Signal, not noise**: show the few things that define the design; leave the rest out. The user asks for more.
-
-- **`vocab.md` (required)**: `# <Title>`, then the core business process as 1–2 verb chains in a code block
-  (`Owner —shortens→ LongUrl —becomes→ Link`), then a glossary, one line per term:
-  `- **Term**: one-line meaning`. Business words only. The board highlights these terms in every tile, so
-  use exactly these names everywhere. A new concept goes into the vocab first.
-- **HLD**: components and their interactions. Few boxes, labelled flows.
-- **LLD, core details only**:
-  - **Domain**: the central aggregate(s), their key invariants, the lifecycle if it matters.
-  - **Data schema**: the core tables / collections and the access pattern that drives them.
-  - **Adapters = interfaces only**: the key port signatures in domain types. No implementation.
-  - Not every entity, field, index or port. Omission is fine; clutter is not.
-- **Visual form is free**: pick what costs the reader the least attention: a D2 diagram, a code sketch, a
-  table, a state machine, a sequence, a short markdown note. Every tile earns its place.
-
-## Files
-
-```
-sketches/<name>/
-  vocab.md        # required; the board pins it top-left
-  board.canvas    # JSON Canvas 1.0: places the tiles
-  *.d2 / *.md     # tiles
-```
-
-`board.canvas`: `{"nodes":[…],"edges":[…]}`.
-- File tile: `{"id":"hld","type":"file","file":"hld.d2","x":0,"y":0,"width":640,"height":400}` (path relative
-  to the sketch folder). Text tile: `{"type":"text","text":"markdown…"}`. Frame: `{"type":"group","label":"LLD · Ordering"}`
-  sized around its tiles. Edge: `{"id":"e1","fromNode":"hld","toNode":"domain","label":"zoom"}`. Colors: `"1"`–`"6"`.
-- Heights adapt to content and overlaps are pushed apart, so get `x` and `width` right and leave ~40px gaps.
-- Reading order left → right, top → bottom: vocab, HLD, then LLD (domain, schema, ports).
-
-## D2 notes
-
-- Defaults: sketch (hand-drawn) mode, ELK layout. Contracts and schemas often read better crisp:
-  `vars: { d2-config: { sketch: false } }` at the top of that file.
-- Markdown / code inside a node: `note: |md **Link** · ShortCode |` and
-  `port: |ts interface LinkRepo { byCode(c: ShortCode): Promise<Link | null> } |` (multi-line works; use `|||ts … |||`
-  when the content contains `|`).
-- Tables: `links: { shape: sql_table; code: varchar(8) {constraint: primary_key}; long_url: text }`.
-  Domain types: `shape: class` with fields (`code: ShortCode`) and methods (`+resolve(): LongUrl`).
-- Reveals: `steps: { 1: { … } 2: { … } }`; the tile gets ◀ ▶ controls.
-- **Reserved keywords can't be keys** (case-insensitive): `link`, `label`, `shape`, `style`, `icon`, `tooltip`,
-  `near`, `width`, `height`, `class`, `classes`, `direction`, `constraint`, `vars`, `steps`, `layers`, `scenarios`,
-  `top`, `left`. Use another key with a label: `link_agg: Link { shape: class }`.

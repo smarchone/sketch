@@ -88,7 +88,9 @@ async function doRender(file, content, fsMap, salt) {
         boards.push({ name: `${kind}.${b.name}`, svg: await engine.render(r.diagram, { ...opts, target: `${kind}.${b.name}` }) });
       }
     }
-    return { kind: 'd2', boards, ms: Date.now() - started };
+    // Natural size, so an author can give the tile enough width (narrower tiles scale the diagram down)
+    const vb = boards[0].svg.match(/viewBox="[-\d.]+ [-\d.]+ ([\d.]+) ([\d.]+)"/);
+    return { kind: 'd2', boards, size: vb ? { width: Math.round(+vb[1]), height: Math.round(+vb[2]) } : null, ms: Date.now() - started };
   } catch (err) {
     if (/disposed|worker/i.test(String(err?.message))) d2 = null; // recreate a crashed worker next time
     return { kind: 'd2', error: d2Errors(err), ms: Date.now() - started };
