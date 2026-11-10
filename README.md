@@ -1,6 +1,6 @@
 # Sketch
 
-**A whiteboard for system design that Claude draws and you react to.**
+**A whiteboard for system design that Claude (or any local coding agent) draws and you react to.**
 
 Describe a system in the chat. Claude, working in your repo, sketches it as a board: the business vocab,
 an HLD, and a lean LLD (the core aggregate, the schema that matters, the key ports). It uses D2 diagrams
@@ -52,6 +52,27 @@ claude
 ```
 
 Open http://127.0.0.1:3460 and ask for a sketch. `npm run dev` restarts the server when `server.js` changes.
+
+## Use any local coding agent
+
+Claude Code is the default, but the worker can be any local agent that can run shell commands and edit
+files (Codex, Cursor, Aider, Gemini CLI, …). The relay is plain HTTP on localhost, and the skills are plain
+Markdown, so the agent can read them as instructions.
+
+Start the server, then give your agent this prompt in this repo:
+
+```text
+Act as the Sketch board's worker. Follow .claude/skills/sketch/SKILL.md for the job loop,
+and .claude/skills/sketch-authoring/SKILL.md (plus its references/) for how to draw every sketch.
+```
+
+The whole protocol is three calls:
+
+| Call | What it does |
+|---|---|
+| `GET /api/jobs/next?timeout=300` | Waits for the next chat job (or run `.claude/skills/sketch/scripts/poll.sh`) |
+| write `sketches/<name>/…` | The board re-renders as files change |
+| `POST /api/jobs/complete` `{ job_id, sketch, reply }` | Posts the reply in that sketch's chat |
 
 ## On the board
 

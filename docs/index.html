@@ -130,7 +130,7 @@
   </section>
 
   <p class="eyebrow">How it works</p>
-  <p class="blurb">A small server in your repo, and Claude Code in the same repo.</p>
+  <p class="blurb">A small server in your repo, and Claude Code (or any local coding agent) in the same repo.</p>
 
   <section class="arch">
     <div class="node">
@@ -146,7 +146,7 @@
     </div>
     <div class="arrow"><b>⇄</b></div>
     <div class="node">
-      <span class="lbl">Claude Code</span>
+      <span class="lbl">Claude Code · or any agent</span>
       <h3><code>/sketch</code></h3>
       <p>Listens to the chat and works as the worker: it reads each message, then draws or resketches the board in your repo.</p>
     </div>
@@ -161,7 +161,7 @@
     <div class="cmd"><code>git clone https://github.com/smarchone/sketch && cd sketch</code><button data-copy>copy</button></div>
     <div class="cmd"><code>npm i && npm start</code><span class="note">Node 22+</span><button data-copy>copy</button></div>
     <div class="cmd"><code class="cc">/sketch</code><span class="note">in Claude Code, in the same repo</span><button data-copy>copy</button></div>
-    <p class="or">Then open http://127.0.0.1:3460, hit + New sketch and describe a system.</p>
+    <p class="or">Then open http://127.0.0.1:3460, hit + New sketch and describe a system. Using another agent (Codex, Cursor, Aider…)? Point it at the skill files; <a href="https://github.com/smarchone/sketch#use-any-local-coding-agent">see the README</a>.</p>
   </div>
   <p class="hint">runs on your machine, nothing leaves it</p>
 </main>
