@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sketch</title>
+  <meta name="description" content="Talk to a whiteboard. Review the design in 30 seconds. Ask Claude to whiteboard your system design; push back, and it redraws.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9C%8E%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg:#121214; --win:#18181b; --bar:#1d1d21; --line:#2b2b30; --code:#212126; --card:#17171a;
+      --fg:#cfcdc8; --dim:#8c8a85; --faint:#5a5955; --white:#ecebe6; --accent:#de8a68; --accent-soft:rgba(222,138,104,.12);
+      --you:#e9b949; --you-soft:rgba(233,185,73,.22); --ok:#4fbf83;
+      --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans:system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing:border-box; }
+    html, body { background:var(--bg); color:var(--fg); margin:0; }
+    body { font:15px/1.65 var(--sans); padding:56px 16px 48px; -webkit-font-smoothing:antialiased;
+           background:radial-gradient(900px 420px at 50% -120px, rgba(222,138,104,.10), transparent 70%) no-repeat, var(--bg); }
+    main { max-width:920px; margin:0 auto; }
+    a { color:inherit; }
+
+    h1 { font:600 13px/1 var(--mono); color:var(--dim); margin:0; letter-spacing:-.01em; }
+    h1 span { color:var(--accent); }
+    .top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 22px; }
+    .repo { display:inline-flex; align-items:center; gap:9px; font:600 14px/1 var(--sans); color:#1a1310; text-decoration:none;
+            background:linear-gradient(100deg, #f0b48f, #de8a68 60%, #c96a4a); border-radius:999px; padding:10px 16px 10px 14px;
+            box-shadow:0 0 0 1px rgba(240,180,143,.35), 0 8px 24px -8px rgba(222,138,104,.6); transition:transform .15s, box-shadow .2s; }
+    .repo svg { width:18px; height:18px; }
+    .repo:hover { transform:translateY(-1px); box-shadow:0 0 0 1px rgba(240,180,143,.6), 0 12px 30px -8px rgba(222,138,104,.8); }
+    .hero { margin:0 0 14px; font:700 clamp(34px, 7vw, 56px)/1.05 var(--sans); color:var(--white); letter-spacing:-.035em; }
+    .hero em { font-style:normal; background:linear-gradient(100deg, #f0b48f, #de8a68 55%, #c96a4a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .tldr { color:var(--fg); margin:0 0 22px; max-width:660px; }
+    .tldr span { font:11px/1 var(--mono); color:var(--accent); text-transform:uppercase; letter-spacing:.1em; margin-right:8px; }
+
+    .shot { margin:6px 0 0; border-radius:14px; overflow:hidden; border:1px solid var(--line);
+            box-shadow:0 30px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.02) inset; }
+    .shot img { display:block; width:100%; height:auto; }
+    .problem { margin:8px 0 24px; padding:16px 20px; border-left:2px solid var(--accent); background:linear-gradient(90deg, var(--accent-soft), transparent 80%); border-radius:0 12px 12px 0; }
+    .lbl { font:11px/1 var(--mono); color:var(--accent); text-transform:uppercase; letter-spacing:.1em; }
+    .problem ul { list-style:none; padding:0; margin:12px 0 0; }
+    .problem li { margin:6px 0; padding-left:20px; position:relative; }
+    .problem li::before { content:"×"; position:absolute; left:0; color:var(--faint); }
+
+    .pitch { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px; margin:0 0 52px; }
+    .pitch div { min-width:0; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px 20px; transition:border-color .2s; }
+    .pitch div:hover { border-color:#3a3a40; }
+    .pitch h2 { font:600 16px/1.35 var(--sans); color:var(--white); margin:10px 0 6px; }
+    .pitch p { color:var(--dim); font-size:14px; line-height:1.6; margin:0; }
+
+    .eyebrow { font:600 12px/1 var(--mono); color:var(--faint); text-transform:uppercase; letter-spacing:.12em; margin:0 0 14px; }
+    .blurb { color:var(--dim); font-size:14px; margin:0 0 16px; }
+
+    /* ---- architecture ---- */
+    .arch { display:grid; grid-template-columns:1fr auto 1.35fr auto 1fr; align-items:stretch; gap:10px; margin:0 0 18px; }
+    .node { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 14px 16px; min-width:0; }
+    .node.core { border-color:rgba(222,138,104,.45); background:linear-gradient(180deg, var(--accent-soft), transparent 70%), var(--card); }
+    .node h3 { font:600 15px/1.3 var(--sans); color:var(--white); margin:8px 0 6px; }
+    .node p { color:var(--dim); font-size:13px; line-height:1.55; margin:0; }
+    .node code { font:12px var(--mono); color:var(--fg); background:var(--code); padding:1px 5px; border-radius:4px; }
+    .arrow { display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; font:11px/1.3 var(--mono); color:var(--faint); text-align:center; }
+    .arrow b { color:var(--dim); font-weight:400; font-size:16px; }
+    .gh-line { margin:14px 0 52px; text-align:right; font:13px var(--mono); }
+    .gh-line a { color:var(--dim); text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+    .gh-line a:hover { color:var(--accent); }
+
+    .install { margin-top:14px; display:flex; flex-direction:column; gap:8px; font:13px var(--mono); }
+    .cmd { display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+    .cmd code { flex:1; min-width:0; overflow-x:auto; white-space:nowrap; color:var(--fg); scrollbar-width:none; }
+    .cmd code::before { content:"$ "; color:var(--dim); }
+    .cmd code.cc::before { content:"❯ "; color:var(--accent); }
+    .cmd .note { color:var(--faint); white-space:nowrap; }
+    .cmd button { font:12px var(--mono); color:var(--dim); background:none; border:0; cursor:pointer; padding:0; }
+    .cmd button:hover { color:var(--accent); }
+    .or { color:var(--faint); font:12px var(--mono); margin:4px 0 0; }
+    .hint { color:var(--faint); font:12px var(--mono); margin-top:28px; text-align:center; }
+
+    @media (max-width:760px) {
+      .cmd .note { display:none; }
+      body { padding-top:28px; }
+      .arch { grid-template-columns:minmax(0, 1fr); }
+      .arrow { flex-direction:row; }
+      .arrow b { transform:rotate(90deg); }
+      .pitch { grid-template-columns:minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <h1><span>~/</span>smarchone/sketch</h1>
+    <a class="repo" href="https://github.com/smarchone/sketch" aria-label="smarchone/sketch on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>Star on GitHub</span></a>
+  </header>
+  <p class="hero">Talk to a whiteboard.<br><em>Review the design in 30 seconds.</em></p>
+  <p class="tldr"><span>tl;dr</span> Ask Claude to whiteboard your system design. Push back, and it redraws. Made for designing, brainstorming and interviews.</p>
+
+  <section class="problem">
+    <span class="lbl">The problem</span>
+    <ul>
+      <li>Reviewing a design doc takes an hour of careful reading.</li>
+      <li>Even then, it's hard to feel how the system fits together.</li>
+      <li>Interviews start at a blank whiteboard, so they test drawing instead of design thinking.</li>
+    </ul>
+  </section>
+
+  <section class="pitch">
+    <div>
+      <span class="lbl">Fast review</span>
+      <h2>Review a design in 30 seconds</h2>
+      <p>One board, only the details that matter. After each change, the tiles that changed are highlighted, so the next review is even faster.</p>
+    </div>
+    <div>
+      <span class="lbl">System feel</span>
+      <h2>See how the pieces fit</h2>
+      <p>The business language, the components and how they talk, then the core data and contracts. You get the shape of the system before reading a word of prose.</p>
+    </div>
+    <div>
+      <span class="lbl">A new interview mode</span>
+      <h2>Discuss the design, not the drawing</h2>
+      <p>Hand the candidate a real design instead of a blank page. Find the flaws, argue the trade-offs, sketch the fix together. Or rehearse alone before the real thing.</p>
+    </div>
+  </section>
+
+  <p class="eyebrow">How it works</p>
+  <p class="blurb">A small server in your repo, and Claude Code in the same repo.</p>
+
+  <section class="arch">
+    <div class="node">
+      <span class="lbl">Browser</span>
+      <h3>Board + chat</h3>
+      <p>You review the board and type what to change in the chat beside it.</p>
+    </div>
+    <div class="arrow"><b>⇄</b></div>
+    <div class="node core">
+      <span class="lbl">Server</span>
+      <h3><code>npm start</code></h3>
+      <p>Renders your sketches live and passes your messages to Claude.</p>
+    </div>
+    <div class="arrow"><b>⇄</b></div>
+    <div class="node">
+      <span class="lbl">Claude Code</span>
+      <h3><code>/sketch</code></h3>
+      <p>Listens to the chat and works as the worker: it reads each message, then draws or resketches the board in your repo.</p>
+    </div>
+  </section>
+  <figure class="shot">
+    <img src="screenshot.png" width="2400" height="1500" alt="The Sketch board: a ride-hailing dispatch design with vocab, HLD, open forks, a dispatch sequence diagram, the Trip aggregate, its lifecycle and schema, next to a chat with Claude">
+  </figure>
+  <p class="gh-line"><a href="https://github.com/smarchone/sketch"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub →</a></p>
+
+  <div class="install">
+    <p class="eyebrow" style="margin:0 0 6px">Get started in 1 minute</p>
+    <div class="cmd"><code>git clone https://github.com/smarchone/sketch && cd sketch</code><button data-copy>copy</button></div>
+    <div class="cmd"><code>npm i && npm start</code><span class="note">Node 22+</span><button data-copy>copy</button></div>
+    <div class="cmd"><code class="cc">/sketch</code><span class="note">in Claude Code, in the same repo</span><button data-copy>copy</button></div>
+    <p class="or">Then open http://127.0.0.1:3460, hit + New sketch and describe a system.</p>
+  </div>
+  <p class="hint">runs on your machine, nothing leaves it</p>
+</main>
+
+<script>
+document.querySelectorAll('[data-copy]').forEach((b) => (b.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(b.parentElement.querySelector('code').textContent);
+    b.textContent = 'copied';
+  } catch {
+    b.textContent = 'select it';
+  }
+}));
+</script>
+</body>
+</html>
